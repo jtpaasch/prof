@@ -17,16 +17,45 @@ let main () =
   at_exit Logs.close_all;
 
   let cmd = Cli.shell_cmd () in
+  let num_trials = Cli.num_trials () in
 
-  let msg = Printf.sprintf "---------------- Starting profiler\n" in
-  let msg_ttystr = Tty_str.create ~fmt:Tty_str.Bold msg in
-  Logs.log "verbose" [msg_ttystr];
+  let msg =
+    Printf.sprintf "-- Starting profiler %s\n" (String.make 27 '-') in
+  let ttystr = Tty_str.create msg in
+  Logs.log "verbose" [ttystr];
 
-  let msg = Printf.sprintf "Shell command: [[ %s ]]" cmd in
-  let msg_ttystr = Tty_str.create msg in
-  Logs.log "verbose" [msg_ttystr]
+  let msg = Printf.sprintf "Profiling [[ %s ]] ..." cmd in
+  let msg_ttystr = Tty_str.create msg ~fmt:Tty_str.Bold in
+  Logs.log "main" [msg_ttystr];
 
+  let trials = Trials.run cmd num_trials in
 
+  let trials_strs = Trials_printer.pprint trials in
+  let trials_ttystrs = List.map Tty_str.create trials_strs in
+  Logs.log "verbose" trials_ttystrs;
+
+  let avg_time = Trials.avg_time trials in
+  let total_time = Trials.total_time trials in
+
+  let msg =
+    Printf.sprintf "-- Reporting results %s\n" (String.make 27 '-') in
+  let ttystr = Tty_str.create msg in
+  Logs.log "verbose" [ttystr];
+
+  let msgs = ["Completed trials."; ""] in
+  let ttystrs = List.map Tty_str.create msgs in
+  Logs.log "main" ttystrs;
+
+  let ttystr = Tty_str.create "Results:" ~fmt:Tty_str.Bold in
+  Logs.log "main" [ttystr];
+
+  let msgs = [
+    Printf.sprintf "Avg time: %.3fs" avg_time;
+    Printf.sprintf "Total time: %.3fs" total_time;
+    Printf.sprintf "Number of trials: %d" num_trials;
+    ] in
+  let ttystrs = List.map Tty_str.create msgs in
+  Logs.log "main" ttystrs
 
 (** Handle custom errors, and any unix errors. *)
 let handle_errors f () =

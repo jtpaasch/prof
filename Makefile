@@ -21,5 +21,25 @@ $(build_dir):
 	$(compiler) -I $(build_dir) -c $(build_dir)/tty_str.ml
 	$(compiler) -I $(build_dir) -c $(build_dir)/logs.mli
 	$(compiler) -I $(build_dir) -c $(build_dir)/logs.ml
+	$(compiler) -I $(build_dir) -c $(build_dir)/ps.mli
+	$(compiler) -I $(build_dir) -c $(build_dir)/ps.ml
+	$(compiler) -I $(build_dir) -c $(build_dir)/execution.mli
+	$(compiler) -I $(build_dir) -c $(build_dir)/execution.ml
+	$(compiler) -I $(build_dir) -c $(build_dir)/execution_printer.mli
+	$(compiler) -I $(build_dir) -c $(build_dir)/execution_printer.ml
+	$(compiler) -I $(build_dir) -c $(build_dir)/trials.mli
+	$(compiler) -I $(build_dir) -c $(build_dir)/trials.ml
+	$(compiler) -I $(build_dir) -c $(build_dir)/trials_printer.mli
+	$(compiler) -I $(build_dir) -c $(build_dir)/trials_printer.ml
 	$(compiler) -I $(build_dir) -c $(build_dir)/main.ml
-	$(compiler) -I $(build_dir) -o bin/$(exe_name) unix.$(libextension) cli.$(objextension) tty_str.$(objextension) logs.$(objextension) main.$(objextension)
+	$(compiler) -I $(build_dir) -o bin/$(exe_name) \
+		unix.$(libextension) \
+		cli.$(objextension) \
+		tty_str.$(objextension) \
+		logs.$(objextension) \
+		ps.$(objextension) \
+		execution.$(objextension) \
+		execution_printer.$(objextension) \
+		trials.$(objextension) \
+		trials_printer.$(objextension) \
+		main.$(objextension)
