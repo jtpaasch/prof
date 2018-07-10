@@ -73,39 +73,132 @@ module Buff = struct
 
 end
 
+
+module Stat = struct
+
+  exception NotAnInt of string
+  exception NoSuchDatum of string
+
+  type t = {pid: int; rss: int}
+
+  let pid t = t.pid
+  let rss t = t.rss
+
+  let pg_size = ref (-1)
+
+  let get_page_size =
+    match !pg_size with
+    | (-1) ->
+      let size_in_bytes =
+        Unix.open_process_in "getconf PAGE_SIZE"
+        |> input_line
+        |> int_of_string in
+      pg_size := size_in_bytes / 1024;
+      !pg_size
+    | _ -> !pg_size
+
+  let to_int_exn s =
+    try
+      int_of_string s
+    with e ->
+      let msg = Printf.sprintf "Cannot convert '%s' to an int." s in
+      raise (NotAnInt msg)
+
+  let get_elem_exn data idx msg =
+    try
+      List.nth data idx
+    with e ->
+      raise (NoSuchDatum msg)
+
+  let parse_pid data idx =
+    let err = Printf.sprintf
+      "Can't find PID at index '%d' in /proc/[pid]/stat file." idx in
+    let datum = get_elem_exn data idx err in
+    to_int_exn datum
+
+  let parse_rss data idx pagesize =
+    let err = Printf.sprintf
+      "Can't find RSS at index '%d' in /proc/[pid]/stat file." idx in
+    let datum = get_elem_exn data idx err in
+    let pages = to_int_exn datum in
+    pages * pagesize
+
+  let stat_src_exn pid = 
+    let stat_file = Printf.sprintf "/proc/%d/stat" pid in
+    Files.to_string stat_file
+
+  let stat_src pid =
+    try
+      let stat_file = Printf.sprintf "/proc/%d/stat" pid in
+      let src = Files.to_string stat_file in
+      Some src
+    with
+      | Files.NoSuchFile _ -> None
+      | Files.CouldNotRead _ -> None
+      | e -> raise e
+
+  let create_record src =
+    let pagesize = get_page_size in
+    let data = String.split_on_char ' ' src in
+    {
+      pid = parse_pid data 0;
+      rss = parse_rss data 23 pagesize;
+    }
+
+  let create_exn pid =
+    let src = stat_src_exn pid in
+    create_record src
+
+  let create pid =
+    match stat_src pid with
+    | Some src -> Some (create_record src)
+    | None -> None
+
+end
+
+
 module Cmd = struct
 
-  let rec while_waiting pid delay f x =
+  let collect_output out_buf err_buf =
+    Buff.fill out_buf; Buff.fill err_buf
+
+  let collect_stats pid stats =
+    match Stat.create pid with
+    | Some s -> List.append [s] stats
+    | None -> stats
+
+  let rec while_waiting pid out_buf err_buf stats =
     match Proc.poll pid with
     | None ->
-      f x;
-      Unix.sleepf delay;
-      while_waiting pid delay f x
+      collect_output out_buf err_buf;
+      let new_stats = collect_stats pid stats in
+      Unix.sleepf 0.25;
+      while_waiting pid out_buf err_buf new_stats
     | Some n ->
-      f x;
-      n
-
-  let collect out_buf err_buf =
-    Buff.fill out_buf; Buff.fill err_buf
+      collect_output out_buf err_buf;
+      let new_stats = collect_stats pid stats in
+      n, new_stats
 
   (** Runs a command in a shell, returns the exit code, stdout, and stderr.
 
       Arguments:
       - A string (the command to execute in the shell)
 
-      Returns: a triple composed of:
+      Returns: a 4-tuple composed of:
       - The exit code (an int)
       - A {!Buff.t} that contains the command's stdout.
         The contents can be retrieved with {!Buff.contents}.
       - A {!Buff.t} that contains the command's stderr.
-        The contents can be retrieved with {!Buff.contents}. *)
+        The contents can be retrieved with {!Buff.contents}.
+      - A {!Ps.Stat.t} list that contains stats about the command
+        which are collected as the command executes. *)
   let run cmd =
     let pid, stdout_ch, stderr_ch = Proc.popen cmd in
     let out_buf = Buff.create stdout_ch in
     let err_buf = Buff.create stderr_ch in
-    let exit_code = while_waiting pid 0.25 (collect out_buf) err_buf in
+    let exit_code, stats = while_waiting pid out_buf err_buf [] in
     close_in stdout_ch;
     close_in stderr_ch;
-    (exit_code, out_buf, err_buf)
+    (exit_code, out_buf, err_buf, stats)
 
 end

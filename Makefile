@@ -21,6 +21,8 @@ $(build_dir):
 	$(compiler) -I $(build_dir) -c $(build_dir)/tty_str.ml
 	$(compiler) -I $(build_dir) -c $(build_dir)/logs.mli
 	$(compiler) -I $(build_dir) -c $(build_dir)/logs.ml
+	$(compiler) -I $(build_dir) -c $(build_dir)/files.mli
+	$(compiler) -I $(build_dir) -c $(build_dir)/files.ml
 	$(compiler) -I $(build_dir) -c $(build_dir)/ps.mli
 	$(compiler) -I $(build_dir) -c $(build_dir)/ps.ml
 	$(compiler) -I $(build_dir) -c $(build_dir)/execution.mli
@@ -37,6 +39,7 @@ $(build_dir):
 		cli.$(objextension) \
 		tty_str.$(objextension) \
 		logs.$(objextension) \
+		files.$(objextension) \
 		ps.$(objextension) \
 		execution.$(objextension) \
 		execution_printer.$(objextension) \

@@ -26,6 +26,12 @@ type t = {
   avg_time: float;
   total_time: float;
   num_trials: int;
+  avg_num_stat_collections: int;
+  avg_rss: int;
+  avg_max_rss: int;
+  avg_min_rss: int;
+  max_rss: int;
+  min_rss: int;
 }
 
 (** Get the [executions] of a {!Trials.t} record. *)
@@ -39,6 +45,24 @@ val total_time : t -> float
 
 (** Get the [num_trials] of a {!Trials.t} record. *)
 val num_trials : t -> int
+
+(** Get the [avg_num_stat_collections] of a {!Trials.t} record. *)
+val avg_num_stat_collections : t -> int
+
+(** Get the [num_trials] of a {!Trials.t} record. *)
+val avg_rss : t -> int
+
+(** Get the [num_trials] of a {!Trials.t} record. *)
+val avg_max_rss : t -> int
+
+(** Get the [num_trials] of a {!Trials.t} record. *)
+val avg_min_rss : t -> int
+
+(** Get the [num_trials] of a {!Trials.t} record. *)
+val max_rss : t -> int
+
+(** Get the [num_trials] of a {!Trials.t} record. *)
+val min_rss : t -> int
 
 (** Get the final execution in a {!Trials.t} record's [executions] list. *)
 val last : t -> Execution.t

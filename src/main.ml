@@ -36,6 +36,12 @@ let main () =
 
   let avg_time = Trials.avg_time trials in
   let total_time = Trials.total_time trials in
+  let num_stats = Trials.avg_num_stat_collections trials in
+  let avg_rss = Trials.avg_rss trials in
+  let avg_min_rss = Trials.avg_min_rss trials in
+  let avg_max_rss = Trials.avg_max_rss trials in
+  let min_rss = Trials.min_rss trials in
+  let max_rss = Trials.max_rss trials in
 
   let msg =
     Printf.sprintf "-- Reporting results %s\n" (String.make 27 '-') in
@@ -53,6 +59,12 @@ let main () =
     Printf.sprintf "Avg time: %.3fs" avg_time;
     Printf.sprintf "Total time: %.3fs" total_time;
     Printf.sprintf "Number of trials: %d" num_trials;
+    Printf.sprintf "Avg num stat collections per trial: %d" num_stats;
+    Printf.sprintf "Avg RSS across all trials: %dKb" avg_rss;
+    Printf.sprintf "Avg min RSS across all trials: %dKb" avg_min_rss;
+    Printf.sprintf "Avg max RSS across all trials: %dKb" avg_max_rss;
+    Printf.sprintf "Min RSS of all trials: %dKb" min_rss;
+    Printf.sprintf "Max RSS of all trials: %dKb" max_rss;
     ] in
   let ttystrs = List.map Tty_str.create msgs in
   Logs.log "main" ttystrs

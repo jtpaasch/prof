@@ -67,6 +67,23 @@ module Buff : sig
 
 end
 
+(** A module that wraps stats about a command's execution. *)
+module Stat : sig
+
+  exception NotAnInt of string
+  exception NoSuchDatum of string
+
+  type t
+
+  val pid : t -> int
+  val rss : t -> int
+
+  val create_exn : int -> t
+  val create : int -> t option
+
+end
+
+
 (** A module that runs shell commands. *)
 module Cmd : sig
 
@@ -83,6 +100,6 @@ module Cmd : sig
       The contents can be retrieved with {!Buff.contents}.
 
       See {!Ps} for usage examples. *)
-  val run : string -> int * Buff.t * Buff.t
+  val run : string -> int * Buff.t * Buff.t * Stat.t list
 
 end

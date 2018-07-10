@@ -12,6 +12,11 @@ type t = {
   stderr: string list;
   exit_code: int;
   duration: float;
+  stats: Ps.Stat.t list;
+  num_stat_collections: int;
+  avg_rss: int;
+  min_rss: int;
+  max_rss: int;
 }
 
 (** Get the command string of an execution. *)
@@ -25,6 +30,21 @@ val stderr : t -> string list
 
 (** Get the exit code captured from an execution. *)
 val exit_code : t -> int
+
+(** Get the stats captured from an execution. *)
+val stats : t -> Ps.Stat.t list
+
+(** Get the number times stats were collected durning an execution. *)
+val num_stat_collections : t -> int
+
+(** Get the avg resident set size of an execution. *)
+val avg_rss : t -> int
+
+(** Get the min resident set size of an execution. *)
+val min_rss : t -> int
+
+(** Get the max resident set size of an execution. *)
+val max_rss : t -> int
 
 (** Get how long an execution took. *)
 val duration : t -> float
