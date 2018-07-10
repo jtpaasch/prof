@@ -27,6 +27,12 @@ That will print out something like this:
     Avg time: 0.250s
     Total time: 1.252s
     Number of trials: 5
+    Avg num stat collections per trial: 1
+    Avg RSS across all trials: 524Kb
+    Avg min RSS across all trials: 524Kb
+    Avg max RSS across all trials: 524Kb
+    Min RSS of all trials: 484Kb
+    Max RSS of all trials: 568Kb
 
 To change the number of trials, use the `--num-trials` parameter (before the two dashes). For example, to run the command through 10 trials:
 
