@@ -4,6 +4,10 @@ Requirements:
 
 * OCaml 4.05+
 
+If you don't have OCaml on your system, use a docker container:
+
+  $ docker run --rm -ti -v $(pwd):/srv -w /srv ocaml/opam:ubuntu-16.04_ocaml-4.06.0 bash
+
 Build:
 
     $ git clone [REPO_URL]
