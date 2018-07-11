@@ -44,7 +44,7 @@ let to_string f =
     Arguments:
     - A path to a file (a string).
 
-    Returns: A string liste. *)
+    Returns: A string list. *)
 let to_lines f =
   let ic = open_in_exn f in
   try

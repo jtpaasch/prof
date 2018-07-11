@@ -6,18 +6,7 @@
 (** Each execution record carries with it information captured from the
     execution of a shell command. E.g., it has the command (a string) that
     was executed, the exit code, stdout and stderr, and the like. *)	
-type t = {
-  cmd: string;
-  stdout: string list;
-  stderr: string list;
-  exit_code: int;
-  duration: float;
-  stats: Ps.Stat.t list;
-  num_stat_collections: int;
-  avg_rss: int;
-  min_rss: int;
-  max_rss: int;
-}
+type t
 
 (** Get the command string of an execution. *)
 val cmd : t -> string
